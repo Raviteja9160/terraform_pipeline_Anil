@@ -1,44 +1,56 @@
 variable "aws_region" {
-  description = "The AWS region to create things in."
-  default     = "ap-south-1"
-}
-
-variable "key_name" {
-  description = " SSH keys to connect to ec2 instance"
-  default     =  "web-1"
-}
-
-variable "instance_type" {
-  description = "instance type for ec2"
-  default     =  "t2.micro"
-}
-
-variable "security_group" {
-  description = "Name of security group"
-  default     = "websg-2"
-}
-
-variable "tag_name" {
-  description = "Tag Name of for Ec2 instance"
-  default     = "my-ec2-instance"
-}
-
-variable "ami_id" {
-  description = "AMI for Ubuntu Ec2 instance"
-  default     = "ami-02eb7a4783e7e9317"
+  default = "us-east-1"
 }
 
 variable "vpc_cidr" {
-  description = "The CIDR block for the VPC."
-  default     = "10.0.0.0/16"
+  default = "10.0.0.0/16"
 }
 
-variable "subnet_1_cidr" {
-  description = "The CIDR block for subnet 1."
-  default     = "10.0.1.0/24"
+variable "public_subnet_cidrs" {
+  type = list(string)
+  default = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
-variable "subnet_2_cidr" {
-  description = "The CIDR block for subnet 2."
-  default     = "10.0.2.0/24"
+variable "private_subnet_cidrs" {
+  type = list(string)
+  default = ["10.0.10.0/24", "10.0.11.0/24"]
+}
+
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+variable "ami_id" {
+  default = "ami-0c55b159cbfafe1f0"
+}
+
+variable "ssh_key_name" {}
+
+variable "security_group_ingress_rules" {
+  type = list(object({
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = [
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
 }
