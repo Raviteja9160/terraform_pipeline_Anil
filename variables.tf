@@ -1,6 +1,6 @@
 variable "aws_region" {
   description = "The AWS region in which to create resources"
-  default = "us-west-2"
+  default = "ap-south-1"
 }
 
 variable "vpc_cidr_block" {
@@ -25,7 +25,7 @@ variable "public_subnet_cidr_block" {
 
 variable "public_subnet_availability_zone" {
   description = "The availability zone for the public subnet"
-  default = "us-west-2a"
+  default = "ap-south-1a"
 }
 
 variable "public_subnet_name" {
@@ -40,7 +40,7 @@ variable "private_subnet_cidr_block" {
 
 variable "private_subnet_availability_zone" {
   description = "The availability zone for the private subnet"
-  default = "us-west-2b"
+  default = "ap-south-1b"
 }
 
 variable "private_subnet_name" {
