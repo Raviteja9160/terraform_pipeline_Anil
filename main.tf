@@ -1,74 +1,59 @@
-provider "aws" {
-  region = var.aws_region
-}
-
-#Create security group with firewall rules
-resource "aws_security_group" "my_security_group" {
-  name        = var.security_group
-  description = "security group for Ec2 instance"
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
- ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
- # outbound from jenkis server
-  egress {
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags= {
-    Name = var.security_group
-  }
-}
-
- # Create vpc
-
-resource "aws_vpc" "my_vpc" {
+# Create VPC
+resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr
 
-}
-
-# Create subnets
-
-resource "aws_subnet" "my_subnet_1" {
-  cidr_block = var.subnet_1_cidr
-
-}
-
-resource "aws_subnet" "my_subnet_2" {
-  cidr_block = var.subnet_2_cidr
-
-}
-
-# Create AWS ec2 instance
-resource "aws_instance" "myFirstInstance" {
-  ami           = var.ami_id
-  key_name = var.key_name
-  instance_type = var.instance_type
-  security_groups= [var.security_group]
-  tags= {
-    Name = var.tag_name
+  tags = {
+    Name = "my-vpc"
   }
 }
 
-# Create Elastic IP address
-resource "aws_eip" "myFirstInstance" {
-  vpc      = true
-  instance = aws_instance.myFirstInstance.id
-tags= {
-    Name = "my_elastic_ip"
+# Create public subnets
+resource "aws_subnet" "public" {
+  count = length(var.public_subnet_cidrs)
+
+  cidr_block = var.public_subnet_cidrs[count.index]
+  vpc_id     = aws_vpc.main.id
+
+  tags = {
+    Name = "public-subnet-${count.index + 1}"
   }
 }
+
+# Create private subnets
+resource "aws_subnet" "private" {
+  count = length(var.private_subnet_cidrs)
+
+  cidr_block = var.private_subnet_cidrs[count.index]
+  vpc_id     = aws_vpc.main.id
+
+  tags = {
+    Name = "private-subnet-${count.index + 1}"
+  }
+}
+
+# Create internet gateway
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "my-igw"
+  }
+}
+
+# Create route table for public subnets
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = {
+    Name = "public-route-table"
+  }
+}
+
+# Create route table for private subnets
+resource "aws_route_table" "private" {
+ 
