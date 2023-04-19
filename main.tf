@@ -54,6 +54,4 @@ resource "aws_route_table" "public" {
   }
 }
 
-# Create route table for private subnets
-resource "aws_route_table" "private" {
- 
+
