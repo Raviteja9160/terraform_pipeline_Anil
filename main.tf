@@ -1,87 +1,64 @@
+# Define the provider and region
 provider "aws" {
   region = var.aws_region
 }
 
-# Create VPC
+# Create the VPC
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr_block
-
   tags = {
-    Name = "my-vpc"
+    Name = var.vpc_name
   }
 }
 
-# Create internet gateway
+# Create the internet gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-
   tags = {
-    Name = "my-igw"
+    Name = var.internet_gateway_name
   }
 }
 
-# Create public subnets
+# Create the public subnet
 resource "aws_subnet" "public" {
-  count = length(var.public_subnet_cidr_blocks)
-
-  cidr_block = var.public_subnet_cidr_blocks[count.index]
-  vpc_id     = aws_vpc.main.id
-
+  vpc_id = aws_vpc.main.id
+  cidr_block = var.public_subnet_cidr_block
+  availability_zone = var.public_subnet_availability_zone
   tags = {
-    Name = "public-${count.index}"
+    Name = var.public_subnet_name
   }
 }
 
-# Create private subnets
+# Create the private subnet
 resource "aws_subnet" "private" {
-  count = length(var.private_subnet_cidr_blocks)
-
-  cidr_block = var.private_subnet_cidr_blocks[count.index]
-  vpc_id     = aws_vpc.main.id
-
+  vpc_id = aws_vpc.main.id
+  cidr_block = var.private_subnet_cidr_block
+  availability_zone = var.private_subnet_availability_zone
   tags = {
-    Name = "private-${count.index}"
+    Name = var.private_subnet_name
   }
 }
 
-# Create route table
+# Create the route table
 resource "aws_route_table" "main" {
   vpc_id = aws_vpc.main.id
-
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.main.id
   }
-
   tags = {
-    Name = "my-route-table"
+    Name = var.route_table_name
   }
 }
 
-# Associate public subnets with route table
+# Associate the public subnet with the route table
 resource "aws_route_table_association" "public" {
-  count = length(var.public_subnet_cidr_blocks)
-
-  subnet_id      = aws_subnet.public[count.index].id
+  subnet_id = aws_subnet.public.id
   route_table_id = aws_route_table.main.id
 }
 
-# Create security group for EC2 instance
-resource "aws_security_group" "instance" {
-  name_prefix = "instance"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+# Associate the private subnet with the route table
+resource "aws_route_table_association" "private" {
+  subnet_id = aws_subnet.private.id
+  route_table_id = aws_route_table.main.id
 }
