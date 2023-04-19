@@ -45,5 +45,5 @@ variable "private_subnet_availability_zone" {
 
 variable "private_subnet_name" {
   description = "The name of the private subnet"
-  default = "my-private-subnet
+  default = "my-private-subnet"
 }
