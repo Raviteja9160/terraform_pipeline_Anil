@@ -1,56 +1,29 @@
 variable "aws_region" {
-  default = "ap-south-1"
+  description = "AWS Region"
+  type        = string
+  default     = "us-west-2"
 }
 
-variable "vpc_cidr" {
-  default = "10.0.0.0/16"
+variable "vpc_cidr_block" {
+  description = "CIDR block for the VPC"
+  type        = string
+  default     = "10.0.0.0/16"
 }
 
-variable "public_subnet_cidrs" {
-  type = list(string)
-  default = ["10.0.1.0/24", "10.0.2.0/24"]
+variable "public_subnet_cidr_blocks" {
+  description = "CIDR blocks for the public subnets"
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
-variable "private_subnet_cidrs" {
-  type = list(string)
-  default = ["10.0.10.0/24", "10.0.11.0/24"]
+variable "private_subnet_cidr_blocks" {
+  description = "CIDR blocks for the private subnets"
+  type        = list(string)
+  default     = ["10.0.3.0/24", "10.0.4.0/24"]
 }
 
 variable "instance_type" {
-  default = "t2.micro"
-}
-
-variable "ami_id" {
-  default = "ami-0c55b159cbfafe1f0"
-}
-
-variable "ssh_key_name" {}
-
-variable "security_group_ingress_rules" {
-  type = list(object({
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = list(string)
-  }))
-  default = [
-    {
-      from_port   = 22
-      to_port     = 22
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    },
-    {
-      from_port   = 80
-      to_port     = 80
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    },
-    {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  ]
+  description = "Instance type for the EC2 instance"
+  type        = string
+  default     = "t2.micro"
 }
