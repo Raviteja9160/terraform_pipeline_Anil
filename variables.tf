@@ -18,6 +18,22 @@ variable "private_subnet_cidr_block" {
   default = "10.0.2.0/24"
 }
 
+variable "vpc_id" {
+  type    = string
+  default = "vpc-09761abb1f763b257" 
+}
+
+variable "public_subnet_id" {
+  type    = string
+  default = "subnet-0b45e17e9362da5ad" 
+}
+
+variable "private_subnet_id" {
+  type    = string
+  default = "subnet-0f1f329ff45a9e18f"
+}
+
+
 
 variable "key_name" {
   description = " SSH keys to connect to ec2 instance"
