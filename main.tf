@@ -2,6 +2,50 @@ provider "aws" {
   region = var.aws_region
 }
 
+# Create a VPC
+resource "aws_vpc" "my_vpc" {
+  cidr_block = var.vpc_cidr_block
+
+  tags = {
+    Name = "My VPC"
+  }
+}
+
+# Create a public subnet
+resource "aws_subnet" "public_subnet" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = var.public_subnet_cidr_block
+  availability_zone = "ap-south-1a" # Change to your desired availability zone
+
+  tags = {
+    Name = "Public Subnet"
+  }
+}
+
+# Create a private subnet
+resource "aws_subnet" "private_subnet" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = var.private_subnet_cidr_block
+  availability_zone = "ap-south-1b" # Change to your desired availability zone
+
+  tags = {
+    Name = "Private Subnet"
+  }
+}
+
+# Output the VPC and subnet IDs
+output "vpc_id" {
+  value = aws_vpc.my_vpc.id
+}
+
+output "public_subnet_id" {
+  value = aws_subnet.public_subnet.id
+}
+
+output "private_subnet_id" {
+  value = aws_subnet.private_subnet.id
+}
+
 #Create security group with firewall rules
 resource "aws_security_group" "my_security_group" {
   name        = var.security_group
