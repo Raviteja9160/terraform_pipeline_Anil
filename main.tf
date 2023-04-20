@@ -46,6 +46,62 @@ output "private_subnet_id" {
   value = aws_subnet.private_subnet.id
 }
 
+# Create an internet gateway
+resource "aws_internet_gateway" "my_igw" {
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "Internet Gateway"
+  }
+}
+
+# Create a route table for the public subnet
+resource "aws_route_table" "public_route_table" {
+  vpc_id = var.vpc_id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.my_igw.id
+  }
+
+  tags = {
+    Name = "Public Route Table"
+  }
+}
+
+# Associate the public subnet with the public route table
+resource "aws_route_table_association" "public_association" {
+  subnet_id      = var.public_subnet_id
+  route_table_id = aws_route_table.public_route_table.id
+}
+
+# Create a route table for the private subnet
+resource "aws_route_table" "private_route_table" {
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "Private Route Table"
+  }
+}
+
+# Associate the private subnet with the private route table
+resource "aws_route_table_association" "private_association" {
+  subnet_id      = var.private_subnet_id
+  route_table_id = aws_route_table.private_route_table.id
+}
+
+# Output the internet gateway ID and route table IDs
+output "internet_gateway_id" {
+  value = aws_internet_gateway.my_igw.id
+}
+
+output "public_route_table_id" {
+  value = aws_route_table.public_route_table.id
+}
+
+output "private_route_table_id" {
+  value = aws_route_table.private_route_table.id
+}
 
 #Create security group with firewall rules
 resource "aws_security_group" "my_security_group" {
