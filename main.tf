@@ -46,6 +46,15 @@ output "private_subnet_id" {
   value = aws_subnet.private_subnet.id
 }
 
+# Create an internet gateway
+resource "aws_internet_gateway" "my_igw" {
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "My Internet Gateway"
+  }
+}
+
 #Create security group with firewall rules
 resource "aws_security_group" "my_security_group" {
   name        = var.security_group
